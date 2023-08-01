@@ -1,6 +1,6 @@
 [![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC_BY--NC--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
-## Ontology Matching (OA) / Ontology Alignment (OA)
+## Ontology Matching (OM) / Ontology Alignment (OA)
 
 Unsupervised Ontology Matching (OM) or Ontology Alignment (OA) is performed by treating it as a translation task. This framework leverages a multi-task sequence-to-sequence transformer model to perform alignment across multiple ontologies in a zero-shot, unified and end-to-end manner. More specifically, following steps are performed :
 
