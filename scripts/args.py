@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Optional
-
+from multiprocessing import cpu_count
 
 @dataclass
 class ModelArguments:
@@ -65,7 +65,7 @@ class DataTrainingArguments:
     )
     overwrite_cache: bool = field(default=False, metadata={"help": "Overwrite the cached training and evaluation sets"})
     preprocessing_num_workers: Optional[int] = field(
-        default=None,
+        default=cpu_count()//2,
         metadata={"help": "The number of processes to use for the preprocessing."},
     )
     max_source_length: Optional[int] = field(
@@ -203,5 +203,13 @@ class DataTrainingArguments:
     def __post_init__(self):
         if self.dataset_name is None and self.train_file is None and self.validation_file is None:
             raise ValueError("Need either a dataset name or a training/validation file.")
+
+        # if self.train_file is not None:
+        #     extension = self.train_file.split(".")[-1]
+        #     # assert extension == "jsonl", "`train_file` should be a json file."
+        # if self.validation_file is not None:
+        #     extension = self.validation_file.split(".")[-1]
+        #     # assert extension == "jsonl", "`validation_file` should be a json file."
         if self.val_max_target_length is None:
             self.val_max_target_length = self.max_target_length
+

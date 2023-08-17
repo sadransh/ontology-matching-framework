@@ -1,6 +1,14 @@
 [![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC_BY--NC--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
+#### Updates:
+ - [8/17] We added two `.sh` files to self-contain the training and pre-training hyperparameters. The Readme walk-through is also updated to reflect this. 
+ 
 ## Ontology Matching (OM) / Ontology Alignment (OA)
+
+<p align="center">
+<img src="banner.png" width="512"> 
+</p>
+
 
 Unsupervised Ontology Matching (OM) or Ontology Alignment (OA) is performed by treating it as a translation task. This framework leverages a multi-task sequence-to-sequence transformer model to perform alignment across multiple ontologies in a zero-shot, unified and end-to-end manner. More specifically, following steps are performed :
 
@@ -13,6 +21,7 @@ Unsupervised Ontology Matching (OM) or Ontology Alignment (OA) is performed by t
 (4) Predictions : In the prediction step, given a source ontology, the output is predicted in a zero-shot manner.
 
 For the OAEI 2022::BioML track, evaluation can be performed by downloading the trained model and data.
+
 
 ## Packages
 
@@ -94,15 +103,15 @@ python eval_scripts.py --task_name body --score_based --prediction_path  ../mode
 
 ## Pre-training
 
-Pretraining is done starting from byT5 google checkpoint and using the generated pre-training data
+Pretraining is done starting from byt5-small google checkpoint and using the generated pre-training data
 
-- Set the file path inside regarding base model and pre-training data in the script
-- set mlm to True, start from byT5 google checkpoint.
-- Run the following commands to perform pre-training:
+- Set the file path inside regarding base model and pre-training data in the `pre-train.sh`
+- set mlm to True, start from byt5 google checkpoint.
+- Run the following commands to perform pre-training:(the first arg is the # of GPUs as is assumed to be 8)
 
   ```
   cd scripts
-  torchrun --nproc_per_node=8 train.py 
+  sh pretrain.sh 8 
   ```
 
   The script will perform pre-training and will generate pre-trained checkpoints.
@@ -145,13 +154,13 @@ For Example,
 
 Fine-tuning is done based on generated files for fine-tuning as well as pre-trained checkpoint:
 
-- Set the checkpoint_name to `checkpoint-55000`, set the path for training data to generated fine-tuning data,
+- Set the model_path_name to `checkpoint-55000` in `train.sh``, and update the path to fine-tuining subset,
 - Set mlm to `False`
-- Run the following commands to perform fine-tuning:
+- Run the following commands to perform fine-tuning: (the argument is the # of GPUs as is assumed to be 8)
 
   ```
   cd scripts
-  torchrun --nproc_per_node=8 train.py 
+  sh train.sh 8
   ```
 
 ### Fine-tuning tasks:

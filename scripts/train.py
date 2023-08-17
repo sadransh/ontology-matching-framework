@@ -11,7 +11,6 @@ from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
 
-from multiprocessing import cpu_count
 from typing import Any, Optional, Union
 
 import datasets
@@ -56,72 +55,20 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 datasets.logging.set_verbosity_error()
 
+# argparser = argparse.ArgumentParser(scriptArgs)
+# script_args = argparser.parse_args()
 
 today = datetime.now(pytz.timezone("US/Pacific")).strftime("%m-%d-%y-%H%M")
 
-
-train_data_file = "../data/finetuning/07-23-23_pharmbody_upsampled/all_finetuning_train_tree_pharmbodyup_fixed.jsonl"
-
-
-val_data_file = "../data/finetuning/07-23-23_pharmbody_upsampled/all_finetuning_eval_tree_pharmbodyup_fixed.jsonl" 
 evaluation_test_data_file = None
 
-do_train_model = True
 
-checkpoint_name = '../models/pre-trained/checkpoint-55000' #use for fine-tuning
-if checkpoint_name:
-    base_model = checkpoint_name
-    base_model_name = base_model.split("-")[-1]
-else:
-    # Default mode - running from base model
-    base_model = "google/byt5-small"
-    # base_model = '../models/pre-trained/checkpoint-55000'
-    base_model_name = base_model.split("-")[-1]
-
-runname = f"paper-fine-tune{today}-from-{base_model_name}"
-
-args = [
-    "--predict_with_generate=False",
-    "--report_to=none",
-    "--num_train_epochs=50",
-    f"--model_name_or_path={base_model}",
-    "--logging_steps=50",
-    "--save_steps=5000",
-    "--eval_steps=5000",
-    f"--output_dir=../models/{runname}",
-    f"--train_file={train_data_file}",
-    f"--validation_file={val_data_file}",
-    "--seed=43",
-    "--per_device_eval_batch_size=20",
-    "--per_device_train_batch_size=20",
-    "--max_target_length=512",
-    "--max_source_length=512",
-    f"--run_name={runname}",
-    f"--preprocessing_num_workers={cpu_count()//2}",
-    "--save_total_limit=200",
-    "--learning_rate=0.001",
-    "--warmup_ratio=.03",
-    "--mlm=False",
-    "--mlm_mask_probability=0.1",
-    "--mlm_max_mask_probability=0.35",
-    "--mlm_mask_increase_epoch_end=5",
-    "--mlm_mask_token=\x00",
-    "--child_parent_separator=",
-
-]
-
-if do_train_model:
-    args.extend(
-        [
-            "--do_train",
-            "--do_eval",
-            "--evaluation_strategy=steps",
-        ]
-    )
 
 
 parser = HfArgumentParser((ModelArguments, DataTrainingArguments, Seq2SeqTrainingArguments))
-model_args, data_args, training_args = parser.parse_args_into_dataclasses(args=args)
+model_args, data_args, training_args = parser.parse_args_into_dataclasses()
+
+
 
 # Setup logging
 logging.basicConfig(
@@ -774,9 +721,7 @@ if training_args.label_smoothing_factor > 0 and not hasattr(model, "prepare_deco
         "label_smoothing is enabled but the `prepare_decoder_input_ids_from_labels` method is not defined for"
         f"`{model.__class__.__name__}`. This will lead to loss being calculated twice and will take up more memory"
     )
-print("$"*40)
 
-# %%
 if training_args.do_train:
     if "train" not in raw_datasets:
         raise ValueError("--do_train requires a train dataset")
