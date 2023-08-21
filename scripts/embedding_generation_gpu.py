@@ -109,7 +109,7 @@ class NCITDNormalizeSYN:
 
 
 class Normalizer:
-    def __init__(self, model_name=""):
+    def __init__(self, model_name="",gpu_num=0):
 
         self.model_name = model_name
         set_seed(43)
@@ -119,10 +119,11 @@ class Normalizer:
         self.encoder_pool = 'max'
         self.encoder_layer = 12
         self.decoder_layer = 4
+        self.gpu_num=gpu_num
         
         if torch.cuda.is_available():
             target_devices = [f'cuda:{i}' for i in range(torch.cuda.device_count())]
-            self.device = target_devices[0]
+            self.device = target_devices[self.gpu_num] if self.gpu_num < len(target_devices) else target_devices[0]
         else:
             self.device = 'cpu'
         self.model.to(self.device)
@@ -245,8 +246,8 @@ class Normalizer:
                                 np.prod(snomed_ct_probs) )
 
 class conceptNormalizer(Normalizer):
-    def __init__(self, model_name):
-        super().__init__(model_name = model_name)
+    def __init__(self, model_name,gpu_num):
+        super().__init__(model_name = model_name,gpu_num=gpu_num)
     def parse_decoder_output(self, decoder_output_str, char_probs):
         char_probs.append(1.0) # add a fake probability as the delimiter's len is 2 
         snomed_ct_strs, snomed_ct_probs = self._parse_component(decoder_output_str, char_probs, '][')
@@ -765,7 +766,7 @@ if __name__ == "__main__":
 
 
 
-    normalizerD = conceptNormalizer(path_to_checkpoint)
+    normalizerD = conceptNormalizer(path_to_checkpoint,gpu_num=GPU_DEVICE)
 
     print (f"------------------------- Checkpoint: {checknum} ---------------------------")
 
