@@ -1,7 +1,8 @@
 [![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC_BY--NC--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 #### Updates:
- - [8/17] We added two `.sh` files to self-contain the training and pre-training hyperparameters. The Readme walk-through is also updated to reflect this. 
+ - [8/21] We fixed a bug regarding gpu_num extracting embeddings due to updates to pytorch.
+ - [8/17] We added two `.sh` files to self-contain the training and pre-training hyperparameters. The Readme walk-through is also updated to reflect this.
  
 ## Ontology Matching (OM) / Ontology Alignment (OA)
 
